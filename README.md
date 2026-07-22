@@ -1,68 +1,120 @@
-🏠 House Price Prediction
+# House Price Prediction
 
-Ever wonder how much a house should cost? This project tries to answer exactly that. Feed it some details about a house — how many bedrooms, how big it is, where it's located — and it'll spit out a predicted price.
+A machine learning project that predicts house prices in King County, Washington using Linear Regression and Random Forest Regressor.
 
-What's going on here?
+---
 
-We're using real housing data (from King County, Washington) to train a machine learning model. Once trained, the model can look at a house it's never seen before and make a pretty reasonable guess at what it's worth.
+## Dataset
 
-Two different approaches are tested and compared:
+**KC House Data** — 21,613 house sales in King County, Washington (May 2014 to May 2015)
 
-Linear Regression — the simpler, more interpretable one. Think of it as drawing the best possible straight line through all the data points.
-Random Forest — the more powerful one. It builds hundreds of mini decision trees and averages their answers, which tends to be a lot more accurate.
-The data
+You can load the dataset in one of two ways:
 
-The dataset used is kc_final.csv — King County house sales data. Each row is a house that was sold, and we look at 18 features to predict the price:
+**Option 1: Use the CSV file directly**
+```python
+import pandas as pd
 
-Feature	What it means
-bedrooms	Number of bedrooms
-bathrooms	Number of bathrooms
-sqft_living	Size of the living space (sq ft)
-sqft_lot	Size of the land plot (sq ft)
-floors	Number of floors
-waterfront	Is it on the water? (1 = yes, 0 = no)
-view	Quality of the view (0–4)
-condition	Overall condition of the house (1–5)
-grade	Construction & design quality (1–13)
-sqft_above	Square footage above ground
-sqft_basement	Square footage of the basement
-yr_built	Year the house was built
-yr_renovated	Year it was last renovated (0 = never)
-zipcode	ZIP code of the house
-lat / long	GPS coordinates
-sqft_living15	Average living space of the 15 nearest neighbors
-sqft_lot15	Average lot size of the 15 nearest neighbors
-How it works, step by step
-Load the data — read in the CSV file
-Split it up — 80% of the houses are used for training, 20% are held back for testing
-Train the models — the models learn patterns from the training data
-Measure accuracy — check how well the models perform on the houses they've never seen
-Make a prediction — plug in details for a brand new house and get a price estimate
-How accurate is it?
+housing_data = pd.read_csv('kc_final.csv')
+```
 
-Three metrics are used to judge how good the predictions are:
+**Option 2: Download from Kaggle**
+```python
+import kagglehub
 
-MAE (Mean Absolute Error) — on average, how many dollars off is the prediction? Lower is better.
-RMSE (Root Mean Squared Error) — similar to MAE, but punishes big mistakes more harshly. Lower is better.
-R² Score — how much of the price variation does the model explain? Ranges from 0 to 1, and closer to 1 is better.
+path = kagglehub.dataset_download("astronautelvis/kc-house-data")
+print("Path to dataset files:", path)
+```
 
-Random Forest generally wins on all three.
+---
 
-Example prediction
+## Features Used
 
-The notebook includes a sample house to predict on — a 3-bedroom, 2-bathroom place in Seattle (ZIP 98103), built in 1995, about 2,000 sq ft. Both models give a price estimate for it so you can see them side by side.
+| Feature | Description |
+|---|---|
+| `bedrooms` | Number of bedrooms |
+| `bathrooms` | Number of bathrooms |
+| `sqft_living` | Square footage of the living space |
+| `sqft_lot` | Square footage of the lot |
+| `floors` | Number of floors |
+| `waterfront` | Whether the house has a waterfront view |
+| `view` | Number of times the house has been viewed |
+| `condition` | Overall condition of the house |
+| `grade` | Overall grade given to the housing unit |
+| `sqft_above` | Square footage of the house apart from the basement |
+| `sqft_basement` | Square footage of the basement |
+| `yr_built` | Year the house was built |
+| `yr_renovated` | Year the house was renovated |
+| `zipcode` | ZIP code of the house location |
+| `lat` | Latitude coordinate |
+| `long` | Longitude coordinate |
+| `sqft_living15` | Living area square footage in 2015 |
+| `sqft_lot15` | Lot square footage in 2015 |
 
-Requirements
+**Target:** `price` — the sale price of the house
+
+---
+
+## Models
+
+### Linear Regression
+A baseline model using scikit-learn's `LinearRegression`. The dataset is split 80/20 for training and testing with `random_state=42`.
+
+### Random Forest Regressor
+An ensemble model using 100 estimators (`n_estimators=100`, `random_state=42`), which significantly outperforms the linear baseline.
+
+---
+
+## Evaluation Metrics
+
+Both models are evaluated using:
+
+| Metric | Description |
+|---|---|
+| MAE | Mean Absolute Error — average dollar difference between predicted and actual price |
+| RMSE | Root Mean Squared Error — penalises larger errors more heavily |
+| R² Score | Proportion of variance in price explained by the model |
+
+---
+
+## Example Prediction
+
+The notebook includes a sample prediction for a house with the following attributes:
+
+| Attribute | Value |
+|---|---|
+| Bedrooms | 3 |
+| Bathrooms | 2 |
+| Living Area | 2,000 sqft |
+| Lot Size | 5,000 sqft |
+| Floors | 1 |
+| Waterfront | No |
+| Condition | 3 |
+| Grade | 7 |
+| Year Built | 1995 |
+| ZIP Code | 98103 |
+| Latitude / Longitude | 47.656 / 122.34 |
+
+---
+
+## Requirements
+
+```
 pandas
 scikit-learn
+kagglehub
+```
 
-Install them with:
+Install all dependencies with:
 
-bash
-pip install pandas scikit-learn
+```bash
+pip install pandas scikit-learn kagglehub
+```
 
-You'll also need the kc_final.csv dataset in the same folder as the notebook.
+---
 
-Running it
+## Usage
 
-Open House_Price_Prediction.ipynb in Jupyter and run the cells top to bottom. That's it!
+1. Clone this repository
+2. Either place `kc_final.csv` in the project folder or download it via `kagglehub`
+3. Open `House_Price_Prediction.ipynb` in Jupyter
+4. Run all cells in order
